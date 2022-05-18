@@ -1,2 +1,4 @@
-# crowdingSTToolkit
-Smart Tourism Toolkit for crowding monitoring solutions
+# Crowding STToolkit
+## Smart Tourism Toolkit for crowding monitoring solutions
+
+This STToolkit is aimed at tourism SMEs or other organizations that deal with potentially excessive tourism crowding levels, to allow optimizing their delivery and quality of service. It will provide guidance on how to build a STT (Smart Tourism Tool) to monitor crowding levels in real time and/or estimate the outflow period. Either in closed space cultural or religious tourism scenarios (e.g. museums, monuments and cathedrals) or in open air events for tourists (e.g. concerts, video mapping or fireworks), it is crucial to monitor the occupation of the space, either to ensure a better visiting experience (e.g. by inviting tourists to less occupied areas / rooms), for security reasons (e.g. to avoid tampering with exposed objects in a museum space), health reasons (e.g. to avoid exceeding the maximum density of people allowed by health authorities in an event space to prevent contagion in times of pandemic), or simply because of workforce management considerations (e.g. to calculate the expected time for evacuating a square where an open-air show took place, to allow cleaning teams to proceed).
