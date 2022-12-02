@@ -1,0 +1,22 @@
+Test Hex string to array with empty string: failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : failure - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Test Hex string to array with : success - Test successful
+Hex string tests successful.
+PASS test/test-hex_string_to_array.sh (exit status: 0)
