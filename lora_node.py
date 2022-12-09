@@ -5,9 +5,9 @@ lora = Rak811()
 lora.hard_reset()
 lora.mode = Mode.LoRaWan
 lora.band = 'EU868'
-lora.set_config(dev_eui='3939353466385117',
-app_eui='190E110342012981',
-app_key='CBDF9117D3E1A7F9AA11166ED97BF8F6')
+lora.set_config(dev_eui='xxxxxxxxxxxxxxxx',   #Copy the result of the 'sudo rak811 get-config dev_eui' command
+app_eui='xxxxxxxxxxxxxxxx',                   #AppEUI obtained from the TTN/Helium console
+app_key='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')   #AppKey obtained from the TTN/Helium console
 lora.join_otaa()
 lora.dr = 5
 lora.send('Hello world')
