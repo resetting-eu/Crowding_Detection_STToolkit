@@ -1,3 +1,5 @@
+# Python script for sending data from our sensors through LoRa tecnology
+
 #!/usr/bin/env python3
 from rak811.rak811 import Mode, Rak811
 
