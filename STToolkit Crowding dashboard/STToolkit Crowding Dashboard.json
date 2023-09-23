@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_INFLUXDB_- INFLUXDBCROWDING",
-      "label": "InfluxDB - InfluxDbCrowding",
+      "name": "DS_INFLUXDB_DATA SOURCE",
+      "label": "InfluxDB Data Source",
       "description": "",
       "type": "datasource",
       "pluginId": "influxdb",
@@ -21,7 +21,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.0.5"
+      "version": "10.1.2"
     },
     {
       "type": "datasource",
@@ -75,7 +75,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+        "uid": "${DS_INFLUXDB_DATA SOURCE}"
       },
       "description": "This table alows you to visualize the general information of the crowding monitoring system. You can observe the last sensor location measurement sent,  the last crowding measurement sent by each sensor, and the last number of detected devices by each sensor.",
       "fieldConfig": {
@@ -86,7 +86,9 @@
           },
           "custom": {
             "align": "left",
-            "displayMode": "color-text",
+            "cellOptions": {
+              "type": "color-text"
+            },
             "filterable": false,
             "inspect": false
           },
@@ -161,14 +163,16 @@
         ]
       },
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 12,
         "x": 0,
         "y": 0
       },
       "id": 4,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": false,
           "fields": [],
           "reducer": [
@@ -179,14 +183,14 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.0.5",
+      "pluginVersion": "10.1.2",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+            "uid": "${DS_INFLUXDB_DATA SOURCE}"
           },
-          "query": "t1 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: 2023-09-01T00:00:00Z)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensorLocation\" )\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\nt2 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: -10m)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\" )\r\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\njoin( tables: {t1: t1, t2: t2}, on: [\"device\"])\r\n  |> group(columns: [\"device\"])\r\n  |> last(column: \"devices_detected\")\r\n  |> rename(columns: {device: \"Sensor\", _time_t1: \"Last Location\",_time_t2: \"Last Record\", devices_detected: \"Detected devices\"}) \r\n  |> drop(columns:[\"latitude\", \"longitude\",\"_measurement_t1\", \"_measurement_t2\",\"ipaddress\", \"macAddress\",\"type_data\",\"tecnology\",\"ipAddress\", \"location\"])  \r\n  |> group()",
+          "query": "t1 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: 2023-09-01T00:00:00Z)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensorLocation\" )\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\nt2 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: 2023-09-01T00:00:00Z)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\" )\r\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\njoin( tables: {t1: t1, t2: t2}, on: [\"device\"])\r\n  |> group(columns: [\"device\"])\r\n  |> last(column: \"devices_detected\")\r\n  |> rename(columns: {device: \"Sensor\", _time_t1: \"Last Location\",_time_t2: \"Last Record\", devices_detected: \"Detected devices\"}) \r\n  |> drop(columns:[\"latitude\", \"longitude\",\"_measurement_t1\", \"_measurement_t2\",\"ipaddress\", \"macAddress\",\"type_data\",\"tecnology\",\"ipAddress\", \"location\"])  \r\n  |> group()",
           "refId": "A"
         }
       ],
@@ -198,7 +202,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+        "uid": "${DS_INFLUXDB_DATA SOURCE}"
       },
       "description": "This panel shows the crowding geodistributions at the several locations where the sensors are currently deployed. Each sensor is represented in a heatmap circle with the number of detected devices in its proximity from the last measurement.\n\nYou can set the inicial view of this panel by selecting 'Edit', and  then using the 'Map view' tab. \n Specify the latitute and longitude coordinates for the initial view of this map when entering on this dashboard.",
       "fieldConfig": {
@@ -293,7 +297,7 @@
         ]
       },
       "gridPos": {
-        "h": 16,
+        "h": 15,
         "w": 12,
         "x": 12,
         "y": 0
@@ -301,14 +305,19 @@
       "id": 2,
       "options": {
         "basemap": {
-          "config": {},
+          "config": {
+            "showLabels": true,
+            "theme": "light"
+          },
           "name": "Layer 0",
-          "type": "osm-standard"
+          "opacity": 1,
+          "type": "carto"
         },
         "controls": {
           "mouseWheelZoom": true,
           "showAttribution": false,
           "showDebug": false,
+          "showMeasure": false,
           "showScale": false,
           "showZoom": true
         },
@@ -426,19 +435,20 @@
           "mode": "none"
         },
         "view": {
+          "allLayers": true,
           "id": "coords",
-          "lat": 46.630084,
-          "lon": 8.284434,
+          "lat": 38.749055,
+          "lon": -9.154731,
           "shared": false,
-          "zoom": 4.6
+          "zoom": 17.65
         }
       },
-      "pluginVersion": "9.0.5",
+      "pluginVersion": "10.1.2",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+            "uid": "${DS_INFLUXDB_DATA SOURCE}"
           },
           "query": "t1 = from(bucket: \"DetectionsDB\")\n  |> range(start: 2023-09-01T00:00:00Z)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensorLocation\" )\n  |> drop(columns:[\"_start\", \"_stop\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n\n\nt2 = from(bucket: \"DetectionsDB\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\" )\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\n  |> drop(columns:[\"_start\", \"_stop\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n\n\njoin( tables: {t1: t1, t2: t2}, on: [\"device\"])\n  |> group(columns: [\"device\"])\n  |> last(column: \"devices_detected\")\n  |> rename(columns: {_time_t1: \"Deployment Date\", _time_t2: \"Last Record\" })\n  |> drop(columns:[\"_measurement_t1\", \"_measurement_t2\",\"ipaddress\", \"macAddress\",\"type_data\",\"tecnology\"])\n  |> group()",
           "refId": "A"
@@ -452,7 +462,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+        "uid": "${DS_INFLUXDB_DATA SOURCE}"
       },
       "description": "This graph allows you to visualize the crowding measurements sent by the sensors. Choose the sensors you want to visualize using the 'Sensor' button on the top left corner.",
       "fieldConfig": {
@@ -462,6 +472,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -473,6 +485,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "fill": "solid"
@@ -519,20 +532,46 @@
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Public_Entrance"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 12,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 4
+        "y": 5
       },
       "id": 8,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -543,7 +582,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+            "uid": "${DS_INFLUXDB_DATA SOURCE}"
           },
           "query": "from(bucket: \"DetectionsDB\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"devices_detected\")\r\n  |> filter(fn: (r) => contains(value: r[\"device\"], set: ${Sensor:json}))\r\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> map(fn: (r) => ({_value:r._value, _time:r._time, _field:r.device}))",
           "refId": "A"
@@ -555,8 +594,8 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 36,
+  "refresh": "",
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -565,7 +604,7 @@
         "current": {},
         "datasource": {
           "type": "influxdb",
-          "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+          "uid": "${DS_INFLUXDB_DATA SOURCE}"
         },
         "definition": "from(bucket: \"DetectionsDB\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\")\r\n  |> group(columns: [\"device\"])\r\n  |> distinct(column: \"device\")\r\n  |> group()",
         "description": "This variable retrieves the sensor names within the selected time range. You can use this variable to select the sensors for which you want to view their latest crowding levels.",
@@ -592,6 +631,6 @@
   "timezone": "",
   "title": "STToolkit Crowding Dashboard",
   "uid": "Yrh2rpe4z34",
-  "version": 17,
+  "version": 9,
   "weekStart": ""
 }
