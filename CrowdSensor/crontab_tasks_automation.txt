@@ -1,0 +1,44 @@
+#                        WELCOME!
+#
+# This file allows users to configure the sensor tasks to be run
+# automatically on pre-determined time-shedules
+#
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+#
+# Each task needs to follow the syntax:
+#
+#  M H DOM MON DOW  COMMAND
+#
+#  -'M H DOM MON DOW' fields speficies the time-schedule of the task.
+#    The time can be defined with concrete values for  minute(M),
+#    hour(H), day of month(DOM), month(MON), and day of the week(DOW),
+#    or use '*' in these fields (for 'any').
+#
+#  -'COMMAND' specifies the command/script to be executed
+#
+#
+#  For example, you can run a 'sudo reboot' command
+#  at 6 AM every day by introducing the following:
+#  0 6 * * * sudo reboot
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+# Also see 'https://crontab.guru' for knowing how to schedule tasks.
+#
+# Insert your tasks to run automatically above:
+#
+@reboot sudo service smbd restart		Uncomment
+# Start monitor mode on Wi-Fi network card	
+#@reboot sudo airmon-ng start wlan0		Uncomment
+# Wi-Fi detection of devices
+#*/10 * * * * timeout -k 1 590s sudo airodump-ng --background 1 wlan0	Uncomment
+#*/10 * * * * sleep 595 && sudo pkill airodump-ng			Uncomment	
+# Periodic upload of crowding data to the Cloud Server
+#*/5 * * * * /usr/bin/python3 /home/kali/Desktop/sendCrowdingData.py SensorTest Wifi 5 wlan1	Uncomment
+# Periodic delete of outdated and unnecessary data from local database
+#0 * * * * /usr/bin/python3 /home/kali/Desktop/dataRetentionManager.py 30 	Uncomment
+# Weekly upload of OUI list
+#0 0 * * 0 /usr/bin/python3 /home/kali/Desktop/macOUIupdater.py		Uncomment
+# Daily reboot
+#0 4 * * * sudo reboot		Uncomment
