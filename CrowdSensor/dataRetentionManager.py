@@ -23,9 +23,9 @@ else:
 
     connwifi = sqlite3.connect('/home/kali/Desktop/DB/DeviceRecords.db', timeout=30)
     cwifi = connwifi.cursor()
-    cwifi.execute("""DELETE FROM Data_Packets WHERE ((First_Record >= ? and First_Record <= ?) or (Last_Time_Found > ? and Last_Time_Found <= ?))""", (dataAnalizar, dataAtual, dataAnalizar, dataAtual))
+    cwifi.execute("""DELETE FROM Data_Packets WHERE NOT ((First_Record >= ? and First_Record <= ?) or (Last_Time_Found > ? and Last_Time_Found <= ?))""", (dataAnalizar, dataAtual, dataAnalizar, dataAtual))
     connwifi.commit()
-    cwifi.execute("""DELETE FROM Probe_Requests WHERE ((First_Record >= ? and First_Record <= ?) or (Last_Time_Found > ? and Last_Time_Found <= ?))""", (dataAnalizar, dataAtual, dataAnalizar, dataAtual))
+    cwifi.execute("""DELETE FROM Probe_Requests WHERE NOT ((First_Record >= ? and First_Record <= ?) or (Last_Time_Found > ? and Last_Time_Found <= ?))""", (dataAnalizar, dataAtual, dataAnalizar, dataAtual))
     connwifi.commit()
 
     cwifi.close()
