@@ -96,6 +96,14 @@ Save the ´crontab' file.
 
 The tasks automation of the sensor are now configured.
 
+You can check the changes by printing the crontab file.
+
+```
+crontab -u <your_user> -l
+```
+
+You should see the crontab file with the sensor tasks automation.
+
 
 
 
