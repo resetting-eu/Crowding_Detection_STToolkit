@@ -8,3 +8,4 @@ This directory contains a costumized version of the aircrack-ng software suite. 
 
 The crowd sensors make the use of two applications of aircrack-ng: `airmon-ng` and `airodump-ng`. The `airmon-ng` is used to entable the monitor mode of a wireless interface, and the `airodump-ng` is used to capture raw Wi-Fi packets from mobile devices. The latter was the only application that was purposefully costumized for performing the device counting and inserting the collected data into the _DeviceRecords.db_ database, the sensor's local database. The remaining applications are not relevant for the STToolkit.
 
+
