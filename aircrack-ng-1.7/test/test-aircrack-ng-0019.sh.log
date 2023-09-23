@@ -1,7 +1,0 @@
-Inter-frame timeout period exceeded.
-Resetting EAPOL Handshake decoder state.
-Inter-frame timeout period exceeded.
-Resetting EAPOL Handshake decoder state.
-[8;28H[2KKEY FOUND! [ MOM12345 ]
-[11B[8;28H[2KKEY FOUND! [ MOM12345 ]
-PASS test/test-aircrack-ng-0019.sh (exit status: 0)

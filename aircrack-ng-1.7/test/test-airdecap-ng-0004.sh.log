@@ -1,4 +1,0 @@
-Number of decrypted WPA  packets         2
-Number of decrypted WPA  packets        53
-Number of decrypted WPA  packets        25
-PASS test/test-airdecap-ng-0004.sh (exit status: 0)
