@@ -1,0 +1,597 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB_- INFLUXDBCROWDING",
+      "label": "InfluxDB - InfluxDbCrowding",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.0.5"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+      },
+      "description": "This table alows you to visualize the general information of the crowding monitoring system. You can observe the last sensor location measurement sent,  the last crowding measurement sent by each sensor, and the last number of detected devices by each sensor.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "align": "left",
+            "displayMode": "color-text",
+            "filterable": false,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "light-green",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 20
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 40
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 150
+              },
+              {
+                "color": "dark-red",
+                "value": 200
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Latitude"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 5
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Longitude"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 5
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "footer": {
+          "enablePagination": false,
+          "fields": [],
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.0.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+          },
+          "query": "t1 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: 2023-09-01T00:00:00Z)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensorLocation\" )\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\nt2 = from(bucket: \"DetectionsDB\")\r\n  |> range(start: -10m)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\" )\r\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\r\n  |> drop(columns:[\"_start\", \"_stop\"])\r\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\r\n  |> group()\r\n\r\n\r\njoin( tables: {t1: t1, t2: t2}, on: [\"device\"])\r\n  |> group(columns: [\"device\"])\r\n  |> last(column: \"devices_detected\")\r\n  |> rename(columns: {device: \"Sensor\", _time_t1: \"Last Location\",_time_t2: \"Last Record\", devices_detected: \"Detected devices\"}) \r\n  |> drop(columns:[\"latitude\", \"longitude\",\"_measurement_t1\", \"_measurement_t2\",\"ipaddress\", \"macAddress\",\"type_data\",\"tecnology\",\"ipAddress\", \"location\"])  \r\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "title": "System General Information",
+      "transformations": [],
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+      },
+      "description": "This panel shows the crowding geodistributions at the several locations where the sensors are currently deployed. Each sensor is represented in a heatmap circle with the number of detected devices in its proximity from the last measurement.\n\nYou can set the inicial view of this panel by selecting 'Edit', and  then using the 'Map view' tab. \n Specify the latitute and longitude coordinates for the initial view of this map when entering on this dashboard.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "light-blue",
+                "value": 0
+              },
+              {
+                "color": "blue",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 60
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "dark-yellow",
+                "value": 100
+              },
+              {
+                "color": "orange",
+                "value": 120
+              },
+              {
+                "color": "dark-orange",
+                "value": 150
+              },
+              {
+                "color": "red",
+                "value": 200
+              },
+              {
+                "color": "dark-red",
+                "value": 300
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "latitude"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 5
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "longitude"
+            },
+            "properties": [
+              {
+                "id": "decimals",
+                "value": 5
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "osm-standard"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": false,
+          "showDebug": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "blur": 49,
+              "radius": 42,
+              "weight": {
+                "field": "numdetections",
+                "fixed": 1,
+                "max": 1,
+                "min": 0
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Sensor Detections",
+            "tooltip": true,
+            "type": "heatmap"
+          },
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "field": "numdetections",
+                  "fixed": "text"
+                },
+                "opacity": 0,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "fixed": 1,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "text": {
+                  "field": "devices_detected",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "textConfig": {
+                  "fontSize": 14,
+                  "offsetX": 0,
+                  "offsetY": -5,
+                  "textAlign": "center",
+                  "textBaseline": "bottom"
+                }
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Sensor Number",
+            "tooltip": false,
+            "type": "markers"
+          },
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "field": "numdetections",
+                  "fixed": "#000000"
+                },
+                "opacity": 0,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "fixed": 1,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "field": "",
+                  "fixed": "",
+                  "mode": "fixed"
+                },
+                "text": {
+                  "field": "device",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "textConfig": {
+                  "fontSize": 14,
+                  "offsetY": -30,
+                  "textAlign": "center",
+                  "textBaseline": "bottom"
+                }
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Sensor Names",
+            "tooltip": false,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "none"
+        },
+        "view": {
+          "id": "coords",
+          "lat": 46.630084,
+          "lon": 8.284434,
+          "shared": false,
+          "zoom": 4.6
+        }
+      },
+      "pluginVersion": "9.0.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+          },
+          "query": "t1 = from(bucket: \"DetectionsDB\")\n  |> range(start: 2023-09-01T00:00:00Z)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensorLocation\" )\n  |> drop(columns:[\"_start\", \"_stop\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n\n\nt2 = from(bucket: \"DetectionsDB\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\" )\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\n  |> drop(columns:[\"_start\", \"_stop\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n\n\njoin( tables: {t1: t1, t2: t2}, on: [\"device\"])\n  |> group(columns: [\"device\"])\n  |> last(column: \"devices_detected\")\n  |> rename(columns: {_time_t1: \"Deployment Date\", _time_t2: \"Last Record\" })\n  |> drop(columns:[\"_measurement_t1\", \"_measurement_t2\",\"ipaddress\", \"macAddress\",\"type_data\",\"tecnology\"])\n  |> group()",
+          "refId": "A"
+        }
+      ],
+      "title": "Crowding Geodistribution",
+      "transformations": [],
+      "transparent": true,
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+      },
+      "description": "This graph allows you to visualize the crowding measurements sent by the sensors. Choose the sensors you want to visualize using the 'Sensor' button on the top left corner.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#1fa9ac",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 26,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "RaspberryPi1": {
+                  "index": 0,
+                  "text": "Study Room"
+                },
+                "RaspberryPi2": {
+                  "index": 1,
+                  "text": "Outdoor Passage"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "(Select a value in the 'Sensor' button)",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+          },
+          "query": "from(bucket: \"DetectionsDB\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"devices_detected\")\r\n  |> filter(fn: (r) => contains(value: r[\"device\"], set: ${Sensor:json}))\r\n  |> filter(fn: (r) => r[\"type_data\"] == \"all\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> map(fn: (r) => ({_value:r._value, _time:r._time, _field:r.device}))",
+          "refId": "A"
+        }
+      ],
+      "title": "Crowding Comparison",
+      "transformations": [],
+      "transparent": true,
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB_- INFLUXDBCROWDING}"
+        },
+        "definition": "from(bucket: \"DetectionsDB\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\")\r\n  |> group(columns: [\"device\"])\r\n  |> distinct(column: \"device\")\r\n  |> group()",
+        "description": "This variable retrieves the sensor names within the selected time range. You can use this variable to select the sensors for which you want to view their latest crowding levels.",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Sensor",
+        "multi": true,
+        "name": "Sensor",
+        "options": [],
+        "query": "from(bucket: \"DetectionsDB\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"numdetectionstable\")\r\n  |> group(columns: [\"device\"])\r\n  |> distinct(column: \"device\")\r\n  |> group()",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "STToolkit Crowding Dashboard",
+  "uid": "Yrh2rpe4z34",
+  "version": 17,
+  "weekStart": ""
+}
